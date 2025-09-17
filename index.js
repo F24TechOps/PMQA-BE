@@ -1,7 +1,7 @@
-const express = require('express');
+import express, { json } from 'express';
 
 const app = express();
-app.use(express.json());
+app.use(json());
 
 app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
@@ -12,4 +12,4 @@ app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
 });
 
-module.exports = app;
+export default app;
