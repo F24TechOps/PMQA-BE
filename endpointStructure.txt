@@ -1,0 +1,51 @@
+cyclr endpoints
+- c1 get all accounts
+- c2 get all workflows given an account id
+- c3 get all edges and work out trigger step & update step/response step
+(contact cyclr if they'll give us access to the copy endpoint) 
+if so 
+- c4 copy workflow
+if not 
+- c4a export workflow
+- c4b import workflow as copy of
+- c5 create a new switch step 
+- c6 add edge to the cycle to incorporate switch correctly
+- c7 set last run of trigger step to beginning
+- c8 activate workflow
+- c9 get qa cycle
+- c10 get qa cycle transaction data
+- c11 get all steps in qa cycle
+- c12 get response step data per contact in contact data (in transaction data?)
+- c13 get incident data for qa cycle
+- c14 get mapping in response step
+
+
+qa hub endpoints
+- qa1 post contact data to db - return upload id
+- qa2 post run record to db - uses qa1, c1, c2
+- qa3 get run state - uses qa4 + logic to figure out progress
+- qa4 queue cyclr endpoints for the run logs & validation - uses qa2, c9, c10, c11, c13
+- qa5 compare response to contact data - uses c12, qa1, c13, c11, c14 + logic to produce results, errors, and warnings
+
+Force24 endpoints
+- f1 data added to Force24
+
+New 
+Cyclr endpoints
+- c1 get all accounts
+- c2 get all workflows given an account id
+- c3 get all edges and work out update step/response step
+- c10 get qa cycle transaction data
+- c11 get all steps in qa cycle
+- c12 get response step data per contact in contact data (in transaction data?)
+- c13 get incident data for qa cycle
+- c14 get mapping in response step
+
+QA Hub endpoints
+- qa1 post contact data to db - return upload id
+- qa4 queue cyclr endpoints for the run logs & validation - uses qa2, c9, c10, c11, c13
+- qa3 get run state - uses qa4 + logic to figure out progress
+- qa2 post run record to db - uses qa1, c1, c2
+- qa5 compare response to contact data - uses c12, qa1, c13, c11, c14 + logic to produce results, errors, and warnings
+
+F24 Endpoints
