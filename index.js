@@ -16,6 +16,9 @@ app.get("/api/qa/runs/:id/queue", () => {
 });
 
 
+app.post('/upload', (req, res) => {
+  res.json({ uploadId: 'Jji2XpCSvHT0jyyOHtLc' })
+})
 app.post('/api/qa/runs', (req, res) => {
 const { uploadId, resultJSON, transactionID } = req.body;
 res.send(`runID: ${runID}`);
