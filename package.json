@@ -5,9 +5,17 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "test": "jest"
   },
   "dependencies": {
-    "express": "^5.1.0"
+    "axios": "^1.12.2",
+    "dotenv": "^17.2.2",
+    "express": "^5.1.0",
+    "qs": "^6.14.0"
+  },
+  "devDependencies": {
+    "firebase": "^12.3.0",
+    "jest": "^30.1.3"
   }
 }
