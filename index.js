@@ -10,6 +10,12 @@ app.get("/", (req, res) => {
   res.json({ status: "ok", APIKey: process.env.CYCLR_API_KEY });
 });
 
+app.get("/api/qa/runs/:id/queue", () => {
+  //Using redis/Bull to queue tasks
+  res.json({ queued: true });
+});
+
+
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
 });
