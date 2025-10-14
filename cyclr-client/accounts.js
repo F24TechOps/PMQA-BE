@@ -12,7 +12,10 @@ export default async function getAccounts() {
       pageSize: 10,
     },
   });
-  console.log(accounts.data.map((item) => item.Name));
+  const accountInfo = accounts.data.map((item) => {
+    return { Id: item.Id, Name: item.Name };
+  });
+  return accountInfo;
 }
 
 getAccounts();
