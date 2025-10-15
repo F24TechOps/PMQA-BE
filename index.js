@@ -14,15 +14,23 @@ app.get("/api/qa/runs/:id/queue", (req, res) => {
 });
 
 app.get("/api/qa/runs", (req, res) => {
+  //get's historic runs from db
   res.json({ data: [] });
 });
 
-app.post("/api/upload", (req, res) => {
-  res.json({ uploadId: "Jji2XpCSvHT0jyyOHtLc" });
-});
+// app.post("/api/upload", (req, res) => {
+//   res.json({ uploadId: "Jji2XpCSvHT0jyyOHtLc" });
+// });
 
 app.post("/api/qa/run", (req, res) => {
-  const { uploadId, resultJSON, transactionID } = req.body;
+  const { expectedFields, actualOutput, transactionContext } = req.body;
+  const { accountId, cycleId, transactionId } = transactionContext;
+
+  //send expected fields to db
+
+  //send run record to db (just an id or similar)
+
+  //put run into queue
   res.send(`runID: ${runID}`);
 });
 
