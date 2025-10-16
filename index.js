@@ -1,5 +1,6 @@
 import express, { json } from "express";
 import "dotenv/config";
+import Queue from "./queue/queue";
 
 const app = express();
 app.use(json());
@@ -9,7 +10,11 @@ app.get("/", (req, res) => {
 });
 
 app.get("/api/qa/runs/:id/queue", (req, res) => {
-  //Using redis/Bull to queue tasks
+  const { id } = req.params;
+  if (Queue.name) {
+    const tasks = new Queue();
+  }
+  tasks.enqueue(id);
   res.json({ queued: true });
 });
 
@@ -35,8 +40,8 @@ app.post("/api/qa/run", (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
 });
 
-export default app;
+export default server;
