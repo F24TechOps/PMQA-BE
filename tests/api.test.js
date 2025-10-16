@@ -1,6 +1,15 @@
+import supertest from "supertest";
+import server from "../index.js";
 
-describe("first test", () => {
-  test("first test", () => {
-    expect(1 + 1).toBe(2);
+const request = supertest(server);
+
+afterAll(async () => {
+  await server.close();
+});
+
+describe("queueing process", () => {
+  test("adding a task to the queue", async () => {
+    const res = await request.get("/api/qa/runs/abc/queue");
+    expect(res.json);
   });
 });
