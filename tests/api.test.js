@@ -13,3 +13,11 @@ describe("queueing process", () => {
     expect(res.json);
   });
 });
+
+describe("/api/qa/runs/:id/state", () => {
+  test("200 - Returns state of specified run", async () => {
+    const response = await request.get("/api/qa/runs/sNwBWLZIaXGAwfHGn3NT/state")
+    expect(response.json)
+  });
+});
+
