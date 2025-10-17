@@ -1,6 +1,7 @@
 import express, { json } from "express";
 import "dotenv/config";
 import Queue from "./queue/queue";
+import getRunState from "./firebase/runsState";
 
 const app = express();
 app.use(json());
@@ -10,27 +11,18 @@ app.get("/", (req, res) => {
 });
 
 app.get("/api/qa/runs/:id/state", async (req, res) => {
-  const { runId } = req.params
+  const runId  = req.params.id
   const data = await getRunState(runId)
+  //console.log("data in index", data)
   //Returns state of specified run
-  res.json({
-    updatedAt: "2001-03-11T10:47:54+00:00",
-    createdAt: "2025-10-07T10:47:54+00:00",
-    input: [{firstName: "Jackie", lastName: "Brown"}, {firstName: "Kibbles", lastName: "Pickle"}],
-    state: "In Progress"
-  })
+  return res.json(data)
 })
 
 app.get("/api/qa/runs/:id/state", async (req, res) => {
   const { runId } = req.params
   const data = await getRunState(runId)
   //Returns state of specified run
-  res.json({
-    updatedAt: "2001-03-11T10:47:54+00:00",
-    createdAt: "2025-10-07T10:47:54+00:00",
-    input: [{firstName: "Jackie", lastName: "Brown"}, {firstName: "Kibbles", lastName: "Pickle"}],
-    state: "In Progress"
-  })
+  res.json(data)
 })
 
 app.get("/api/qa/runs/:id/queue", (req, res) => {
