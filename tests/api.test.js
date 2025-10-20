@@ -21,3 +21,15 @@ describe("/api/qa/runs/:id/state", () => {
   });
 });
 
+})
+
+describe("Run result", () => {
+  test("Getting result from runs with run ID", async () => {
+    const res = await request.get("/api/qa/runs/:runId/result");
+    console.log(res.body)
+    expect(res.json);
+  });
+}
+
+
+);
