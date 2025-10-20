@@ -61,7 +61,6 @@ const results = {
   res.json({ results });
 });
 
-
 // app.post("/api/upload", (req, res) => {
 //   res.json({ uploadId: "Jji2XpCSvHT0jyyOHtLc" });
 // });
