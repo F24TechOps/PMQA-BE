@@ -21,7 +21,6 @@ describe("/api/qa/runs/:id/state", () => {
   });
 });
 
-})
 
 describe("Run result", () => {
   test("Getting result from runs with run ID", async () => {
