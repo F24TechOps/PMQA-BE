@@ -8,21 +8,13 @@ app.use(json());
 
 app.get("/", (req, res) => {
   res.json({ status: "ok", APIKey: process.env.CYCLR_API_KEY });
-});
+}); 
 
 app.get("/api/qa/runs/:id/state", async (req, res) => {
   const runId  = req.params.id
   const data = await getRunState(runId)
-  //console.log("data in index", data)
   //Returns state of specified run
   return res.json(data)
-})
-
-app.get("/api/qa/runs/:id/state", async (req, res) => {
-  const { runId } = req.params
-  const data = await getRunState(runId)
-  //Returns state of specified run
-  res.json(data)
 })
 
 app.get("/api/qa/runs/:id/queue", (req, res) => {
@@ -35,16 +27,16 @@ app.get("/api/qa/runs/:id/queue", (req, res) => {
 });
 
 app.get("/api/qa/runs", (req, res) => {
-  //get's historic runs from db
+  //Returns all historic runs from db
   res.json({ data: [] });
 });
 
 
-app.get("/api/qa/runs/:runId/result", (req, res) => {
-  const { runId } = req.params;
+app.get("/api/qa/runs/:id/result", (req, res) => {
+  const { id } = req.params;
 
   // getRunResult is example function- function does not exist yet.
-  // const result = getRunResult(runId);
+  // const result = getRunResult(id);
 const results = {
   fields: {
     emailaddress: {
@@ -68,12 +60,9 @@ const results = {
     extra: 0
   }
 }
-
-
   if (!results) {
     return res.status(404).json({ error: "Run result not found" });
   }
-
   res.json({ results });
 });
 
@@ -81,7 +70,7 @@ const results = {
 //   res.json({ uploadId: "Jji2XpCSvHT0jyyOHtLc" });
 // });
 
-app.post("/api/qa/run", (req, res) => {
+app.post("/api/qa/runs", (req, res) => {
   const { expectedFields, actualOutput, transactionContext } = req.body;
   const { accountId, cycleId, transactionId } = transactionContext;
 
