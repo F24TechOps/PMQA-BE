@@ -1,6 +1,7 @@
 import express, { json } from "express";
 import "dotenv/config";
 import Queue from "./queue/queue";
+import getRunState from "./firebase/runsState";
 
 const app = express();
 app.use(json());
@@ -8,6 +9,21 @@ app.use(json());
 app.get("/", (req, res) => {
   res.json({ status: "ok", APIKey: process.env.CYCLR_API_KEY });
 });
+
+app.get("/api/qa/runs/:id/state", async (req, res) => {
+  const runId  = req.params.id
+  const data = await getRunState(runId)
+  //console.log("data in index", data)
+  //Returns state of specified run
+  return res.json(data)
+})
+
+app.get("/api/qa/runs/:id/state", async (req, res) => {
+  const { runId } = req.params
+  const data = await getRunState(runId)
+  //Returns state of specified run
+  res.json(data)
+})
 
 app.get("/api/qa/runs/:id/queue", (req, res) => {
   const { id } = req.params;
@@ -81,5 +97,6 @@ const PORT = process.env.PORT || 3000;
 const server = app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
 });
+
 
 export default server;
