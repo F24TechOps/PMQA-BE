@@ -20,20 +20,40 @@ export default async function getMapping(accountId, workflowId) {
       }
     );
 
-    const fieldData = fieldResponse.data.map((field) => ({
-      id: step,
-      name: field.Field.Name,
-      isMapped: field.MappingType !== "Ignore",
-    }));
-    //console.log(fieldData)
+    const fieldData = fieldResponse.data.map((field) => {
+      const matches =
+        field.Value?.match(/\{\{(.*?)\}\}/g)?.map((m) =>
+          m.replace(/\{|\}/g, "").trim()
+        ) || [];
+
+      let linkedSteps = [];
+
+      if (field.MappingType === "PreviousStep") {
+        linkedSteps.push({
+          stepId: field.SourceStepId ?? null,
+          fieldId: field.SourceFieldId ?? null,
+        });
+      } else if (field.MappingType === "StaticValue" && matches.length) {
+        matches.forEach((match) => {
+          const [longId, shortId] = match.split(/\s+/);
+          linkedSteps.push({
+            stepId: longId ?? null,
+            fieldId: shortId ?? null,
+          });
+        });
+      }
+
+      return {
+        id: field.Field.Id,
+        name: field.Field.Name,
+        mappingType: field.MappingType,
+        isMapped: field.MappingType !== "Ignore",
+        linkedSteps,
+      };
+    });
+
     output.push(fieldData);
   }
 
-  console.log(output);
+  return output;
 }
-
-// Example run:
-getMapping(
-  "80ca754f-e0bb-40ba-9739-ce3f0f04e6a2",
-  "9a6276fb-8271-4187-b654-76762a687a8b"
-);
