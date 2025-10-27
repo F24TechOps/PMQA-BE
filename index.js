@@ -1,32 +1,102 @@
 import express, { json } from "express";
 import "dotenv/config";
+import Queue from "./queue/queue";
+import getRunState from "./firebase/runsState";
 
 const app = express();
 app.use(json());
-
-const PORT = process.env.PORT || 3000;
 
 app.get("/", (req, res) => {
   res.json({ status: "ok", APIKey: process.env.CYCLR_API_KEY });
 });
 
-app.get("/api/qa/runs/:id/queue", () => {
-  //Using redis/Bull to queue tasks
+app.get("/api/qa/runs/:id/state", async (req, res) => {
+  const runId  = req.params.id
+  const data = await getRunState(runId)
+  //console.log("data in index", data)
+  //Returns state of specified run
+  return res.json(data)
+})
+
+app.get("/api/qa/runs/:id/state", async (req, res) => {
+  const { runId } = req.params
+  const data = await getRunState(runId)
+  //Returns state of specified run
+  res.json(data)
+})
+
+app.get("/api/qa/runs/:id/queue", (req, res) => {
+  const { id } = req.params;
+  if (Queue.name) {
+    const tasks = new Queue();
+  }
+  tasks.enqueue(id);
   res.json({ queued: true });
 });
 
+app.get("/api/qa/runs", (req, res) => {
+  //get's historic runs from db
+  res.json({ data: [] });
+});
 
-app.post('/upload', (req, res) => {
-  res.json({ uploadId: 'Jji2XpCSvHT0jyyOHtLc' })
-})
-app.post('/api/qa/runs', (req, res) => {
-const { uploadId, resultJSON, transactionID } = req.body;
-res.send(`runID: ${runID}`);
+
+app.get("/api/qa/runs/:runId/result", (req, res) => {
+  const { runId } = req.params;
+
+  // getRunResult is example function- function does not exist yet.
+  // const result = getRunResult(runId);
+const results = {
+  fields: {
+    emailaddress: {
+      status: "Correct",
+      value: "glyn.hurll@thetrainingroom.com"
+    },
+    mobilephone: {
+      status: "Missing",
+      reason: "Not mapped in Cyclr"
+    },
+    birthdate: {
+      status: "Missing",
+      reason: "Not mapped in Cyclr"
+    }
+  },
+  summary: {
+    correct: 1,
+    null: 0,
+    missing: 2,
+    warning: 0,
+    extra: 0
+  }
+}
+
+
+  if (!results) {
+    return res.status(404).json({ error: "Run result not found" });
+  }
+
+  res.json({ results });
+});
+
+// app.post("/api/upload", (req, res) => {
+//   res.json({ uploadId: "Jji2XpCSvHT0jyyOHtLc" });
+// });
+
+app.post("/api/qa/run", (req, res) => {
+  const { expectedFields, actualOutput, transactionContext } = req.body;
+  const { accountId, cycleId, transactionId } = transactionContext;
+
+  //send expected fields to db
+
+  //send run record to db (just an id or similar)
+
+  //put run into queue
+  res.send(`runID: ${runID}`);
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
 });
 
-export default app;
+
+export default server;
