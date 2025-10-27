@@ -1,21 +1,35 @@
 import express, { json } from "express";
+import cors from 'cors'
 import "dotenv/config";
-import Queue from "./queue/queue";
+import Queue from "./queue/queue.js";
+import { getOrCreateQueue } from "./queue/queueRegister.js";
 
 const app = express();
+app.use(cors())
 app.use(json());
 
 app.get("/", (req, res) => {
   res.json({ status: "ok", APIKey: process.env.CYCLR_API_KEY });
 });
 
-app.get("/api/qa/runs/:id/queue", (req, res) => {
+app.post("/api/qa/runs/:id/queue", (req, res) => {
   const { id } = req.params;
-  if (Queue.name) {
-    const tasks = new Queue();
+
+  try {
+    const q = getOrCreateQueue("runs");
+
+    const exists = q.items?.some((t) => t.id === id);
+    if (!exists) q.enqueue({ id });
+
+    res.json({ queued: !exists, queue: q.name, size: q.getSize() });
+  } catch (e) {
+    console.error("error adding run to queue", e);
   }
-  tasks.enqueue(id);
-  res.json({ queued: true });
+});
+
+app.get("/api/qa/queue", (req, res) => {
+  const queue = getOrCreateQueue("runs");
+  res.json({ name: queue.name, size: queue.getSize(), items: queue.getQueue() });
 });
 
 app.get("/api/qa/runs", (req, res) => {
