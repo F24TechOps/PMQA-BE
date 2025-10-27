@@ -1,9 +1,12 @@
 import express, { json } from "express";
+import cors from 'cors'
 import "dotenv/config";
+import { getOrCreateQueue } from "./queue/queueRegister.js";
 import Queue from "./queue/queue";
 import getRunState from "./firebase/runsState";
 
 const app = express();
+app.use(cors())
 app.use(json());
 
 app.get("/", (req, res) => {
@@ -34,6 +37,7 @@ app.get("/api/qa/runs/:id/queue", (req, res) => {
   res.json({ queued: true });
 });
 
+// Runs
 app.get("/api/qa/runs", (req, res) => {
   //get's historic runs from db
   res.json({ data: [] });
@@ -91,6 +95,33 @@ app.post("/api/qa/run", (req, res) => {
 
   //put run into queue
   res.send(`runID: ${runID}`);
+});
+
+
+// Uploads
+app.post("/api/upload", (req, res) => {
+  res.json({ uploadId: "Jji2XpCSvHT0jyyOHtLc" });
+});
+
+// Queue
+app.post("/api/qa/runs/:id/queue", (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const q = getOrCreateQueue("runs");
+
+    const exists = q.items?.some((t) => t.id === id);
+    if (!exists) q.enqueue({ id });
+
+    res.json({ queued: !exists, queue: q.name, size: q.getSize() });
+  } catch (e) {
+    console.error("error adding run to queue", e);
+  }
+});
+
+app.get("/api/qa/queue", (req, res) => {
+  const queue = getOrCreateQueue("runs");
+  res.json({ name: queue.name, size: queue.getSize(), items: queue.getQueue() });
 });
 
 const PORT = process.env.PORT || 3000;
