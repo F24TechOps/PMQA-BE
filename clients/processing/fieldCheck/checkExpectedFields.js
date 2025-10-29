@@ -54,7 +54,7 @@ export default function compareFields(expectedFields, actualFields) {
         value: actualFields.items[0].fields[expectedLower[i]],
       };
       resultsObj.summary.correct++;
-    } else {
+    } else if (!furtherInvestigations.fields.includes(expectedLower[i])) {
       furtherInvestigations.fields.push(expectedLower[i]);
     }
   }

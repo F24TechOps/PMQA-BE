@@ -10,7 +10,6 @@ export default function runProcessor(expectedFields, actualFields, transactionCo
 
   //checkMapping - puts fields that were not mapped in results obj
   const mappingResults = mappingCheck(
-    expectedFields,
     actualFields,
     comparisonResults
   );
@@ -46,6 +45,7 @@ const exampleActualFields = {
         "98vzewsraf": "003TA00000zZUzNYAW",
         fd3452x7ez: "2025-10-22T16:38:58+00:00",
         emailAddress: "masir@test.com",
+        mobilephone: null
       },
     },
   ],
