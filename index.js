@@ -2,16 +2,91 @@ import express, { json } from "express";
 import cors from "cors";
 import "dotenv/config";
 import { getOrCreateQueue } from "./queue/queueRegister.js";
-import Queue from "./queue/queue";
-import getRunState from "./firebase/runsState";
+import Queue from "./queue/queue.js";
+import getRunState from "./firebase/runsState.js";
 import runProcessor from "./clients/processing/index.js";
-
+import getAccounts from "./clients/cyclr/accounts.js";
+import getWorkflows from "./clients/cyclr/workflows.js";
 const app = express();
 app.use(cors());
 app.use(json());
 
 app.get("/", (req, res) => {
   res.json({ status: "ok", APIKey: process.env.CYCLR_API_KEY });
+});
+
+//Get Account
+app.get("/api/qa/accounts", async (req, res) => {
+ try {
+    const data = await getAccounts();
+    //console.log("Fetched accounts:", data);
+    return res.json(data);
+  } catch (err) {
+    //console.error("Error fetching accounts:", err.message);
+    return res.status(500).json({ error: "Failed to fetch accounts" });
+  }
+
+    //Dummy Data
+    /* 
+   res.json([
+    { Id: "1", Name: "Personal Checking" },
+    { Id: "2", Name: "Joint Savings" }
+  ]); */
+
+});
+
+//Get Workflow
+app.get("/api/qa/:accountId/cycles", async (req, res) => {
+  const { accountId } = req.params;
+   try {
+    const data = await getWorkflows(accountId); // accountId sent as header
+    //console.log("Fetched workflows:", data);
+    return res.json(data);
+  } catch (err) {
+    //console.error("Error fetching cycles/workflows:", err.message);
+    return res.status(500).json({ error: "Failed to fetch cycles" });
+  } 
+ /*
+   if (accountId === "1") {
+    res.json([
+      { Id: "cycle-1a", Name: "Monthly Bills" },
+      { Id: "cycle-1b", Name: "Weekly Savings" }
+    ]);
+  } else if (accountId === "2") {
+    res.json([{ Id: "cycle-2a", Name: "Investment Cycle" }]);
+  } else {
+    res.json([]);
+  } */
+});
+
+//Get Transactions By ID
+app.get("/api/qa/transactions/:accountId/:cycleId/:transactionId", async (req, res) => {
+  const { accountId, cycleId, transactionId } = req.params;
+   try {
+    const data = await getTransactionByID(accountId, cycleId, transactionId); 
+    return res.json(data);
+  } catch (err) {
+    //console.error("Error fetching transaction:", err.message);
+    return res.status(500).json({ error: "Failed to fetch transaction" });
+  } 
+
+  //Dummy Data
+ /* res.json({
+    accountId,
+    cycleId,
+    transactionId,
+    transaction: {
+      StepId: "transaction-001",
+      StepName: "Validate Email",
+      StepType: "Validation",
+      Timestamp: "2025-10-29T12:14:11.229Z",
+      Request: "Some request data",
+      Response: "Some response data",
+      IncidentLevel: "Error",
+      ShortMessage: "Test short message",
+      FullMessage: "Test full message"
+    }
+  }); */
 });
 
 // Runs
