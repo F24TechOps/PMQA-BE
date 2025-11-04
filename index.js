@@ -1,9 +1,12 @@
 import express, { json } from "express";
 import "dotenv/config";
 import Queue from "./queue/queue";
-import getRunState from "./firebase/getsRunState";
-import postRun from "./firebase/makeRun";
-import postUpload from "./firebase/makeUpload";
+import getRun from "./firebase/getRun";
+import postRun from "./firebase/postRun";
+import postUpload from "./firebase/postUpload";
+import getRuns from "./firebase/getRuns";
+import getUpload from "./firebase/getUpload";
+import postResults from "./firebase/postResults";
 
 const app = express();
 app.use(json());
@@ -12,11 +15,19 @@ app.get("/", (req, res) => {
   res.json({ status: "ok", APIKey: process.env.CYCLR_API_KEY });
 });
 
-app.get("/api/qa/runs/:id/state", async (req, res) => {
+//GET RUN
+app.get("/api/qa/runs/:id", async (req, res) => {
   const runId  = req.params.id
-  const data = await getRunState(runId)
-  //console.log("data in index", data)
-  //Returns state of specified run
+  const data = await getRun(runId)
+  //Returns data of specified run
+  return res.json(data)
+})
+
+//GET UPLOAD
+app.get("/api/qa/runs/:id", async (req, res) => {
+  const uploadId  = req.params.id
+  const data = await getUpload(uploadId)
+  //Returns data of specified upload
   return res.json(data)
 })
 
@@ -29,14 +40,14 @@ app.get("/api/qa/runs/:id/queue", (req, res) => {
   res.json({ queued: true });
 });
 
-app.get("/api/qa/runs", (req, res) => {
-  //get's historic runs from db
-  res.json({ data: [] });
+//GET ALL RUNS
+app.get("/api/qa/runs", async (req, res) => {
+  const data = await getRuns()
+  return res.json({data: data});
 });
 
 app.get("/api/qa/runs/:id/result", (req, res) => {
   const { id } = req.params;
-
   // getRunResult is example function- function does not exist yet.
   // const result = getRunResult(runId);
 const results = {
@@ -68,27 +79,35 @@ const results = {
   res.json({ results });
 });
 
-
+//POST UPLOAD
 app.post("/api/uploads", async (req, res) => {
   const { expectedFields } = req.body
   const uploadID = await postUpload(expectedFields)
   return res.send({ uploadID: uploadID });
 });
 
-
+//POST RUN
 app.post("/api/qa/runs", async (req, res) => {
   const { accountId, cycleId, transactionId } = req.body;
   const transactionContext = { accountId, cycleId, transactionId }
   //Send expected fields to db
-  const runID = await postRun(transactionContext)
-  return res.send({ runID: runID});
+  const runId = await postRun(transactionContext)
+  return res.send({ runId: runId});
 });
+
+//POST RESULTS
+app.get("/api/qa/runs/:id/results", async (req, res) => {
+  const runId  = req.params.id
+  const { resultData } = req.body
+  const resultId = await postResults(runId, resultData)
+  //Returns id of posted results
+  return res.send({resultId : resultId})
+})
+
 
 app.put("/api/qa/runs/:id", (req, res) => {
   const { id } = req.params;
   const { results } = req.body
-
-  
   res.json({ data: [] });
 });
 

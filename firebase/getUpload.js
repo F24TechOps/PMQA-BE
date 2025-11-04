@@ -1,9 +1,9 @@
 import { doc, collection, getDoc } from "firebase/firestore";
 import { db } from "./app.js";
 
-async function getRunState(runId) {
+async function getUpload(uploadId) {
     try{
-        const docSnapshot = await getDoc(doc(collection(db, "runs"), runId))
+        const docSnapshot = await getDoc(doc(collection(db, "uploads"), uploadId))
         //console.log("Document was found at:", docSnapshot.data())
         return docSnapshot.data()
     }
@@ -12,4 +12,4 @@ async function getRunState(runId) {
     }
 }
 
-export default getRunState
+export default getUpload

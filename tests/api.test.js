@@ -14,9 +14,9 @@ xdescribe("queueing process", () => {
   });
 });
 
-xdescribe("GET STATE - /api/qa/runs/:id/state", () => {
-  test("200 - Returns state of specified run", async () => {
-    const response = await request.get("/api/qa/runs/sNwBWLZIaXGAwfHGn3NT/state")
+xdescribe("GET RUN - /api/qa/runs/:id", () => {
+  test("200 - Returns data of specified run", async () => {
+    const response = await request.get("/api/qa/runs/sNwBWLZIaXGAwfHGn3NT")
     expect(response.body)
   });
 });
