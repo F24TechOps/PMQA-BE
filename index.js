@@ -1,11 +1,11 @@
 import express, { json } from "express";
 import "dotenv/config";
 import Queue from "./queue/queue";
-import getRun from "./firebase/getRun";
+import getRunById from "./firebase/getRunById";
 import postRun from "./firebase/postRun";
 import postUpload from "./firebase/postUpload";
 import getRuns from "./firebase/getRuns";
-import getUpload from "./firebase/getUpload";
+import getUploadById from "./firebase/getUploadById";
 import postResults from "./firebase/postResults";
 
 const app = express();
@@ -15,18 +15,18 @@ app.get("/", (req, res) => {
   res.json({ status: "ok", APIKey: process.env.CYCLR_API_KEY });
 });
 
-//GET RUN
+//GET RUN BY ID
 app.get("/api/qa/runs/:id", async (req, res) => {
   const runId  = req.params.id
-  const data = await getRun(runId)
+  const data = await getRunById(runId)
   //Returns data of specified run
   return res.json(data)
 })
 
-//GET UPLOAD
+//GET UPLOAD BY ID
 app.get("/api/qa/runs/:id", async (req, res) => {
   const uploadId  = req.params.id
-  const data = await getUpload(uploadId)
+  const data = await getUploadById(uploadId)
   //Returns data of specified upload
   return res.json(data)
 })
