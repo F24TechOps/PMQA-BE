@@ -1,6 +1,12 @@
 import express, { json } from "express";
 import cors from "cors";
 import "dotenv/config";
+import getRunById from "./firebase/getRunById";
+import postRun from "./firebase/postRun";
+import postUpload from "./firebase/postUpload";
+import getRuns from "./firebase/getRuns";
+import getUploadById from "./firebase/getUploadById";
+import postResults from "./firebase/postResults";
 import { getOrCreateQueue } from "./queue/queueRegister.js";
 import Queue from "./queue/queue.js";
 import getRunState from "./firebase/runsState.js";
@@ -15,6 +21,21 @@ app.get("/", (req, res) => {
   res.json({ status: "ok", APIKey: process.env.CYCLR_API_KEY });
 });
 
+//GET RUN BY ID
+app.get("/api/qa/runs/:id", async (req, res) => {
+  const runId  = req.params.id
+  const data = await getRunById(runId)
+  //Returns data of specified run
+  return res.json(data)
+})
+
+//GET UPLOAD BY ID
+app.get("/api/qa/upload/:id", async (req, res) => {
+  const uploadId  = req.params.id
+  const data = await getUploadById(uploadId)
+  //Returns data of specified upload
+  return res.json(data)
+})
 //Get Account
 app.get("/api/qa/accounts", async (req, res) => {
  try {
@@ -104,15 +125,14 @@ app.post("/api/qa/run", (req, res) => {
 
   //send expected fields to db
 
-  //send run record to db (just an id or similar)
-
-  runProcessor(expectedFields, actualOutput, transactionContext);
-  res.send(`runID: ${runID}`);
+//GET ALL RUNS
+app.get("/api/qa/runs", async (req, res) => {
+  const data = await getRuns()
+  return res.json({data: data});
 });
 
-app.get("/api/qa/runs/:runId/result", (req, res) => {
-  const { runId } = req.params;
-
+app.get("/api/qa/runs/:id/result", (req, res) => {
+  const { id } = req.params;
   // getRunResult is example function- function does not exist yet.
   // const result = getRunResult(runId);
   const results = {
@@ -137,19 +157,49 @@ app.get("/api/qa/runs/:runId/result", (req, res) => {
       warning: 0,
       extra: 0,
     },
-  };
-
+    birthdate: {
+      status: "Missing",
+      reason: "Not mapped in Cyclr"
+    }
+  },
+  summary: {
+    correct: 1,
+    null: 0,
+    missing: 2,
+    warning: 0,
+    extra: 0
+  }
+}
   if (!results) {
     return res.status(404).json({ error: "Run result not found" });
   }
-
   res.json({ results });
 });
 
-// Uploads
-app.post("/api/upload", (req, res) => {
-  res.json({ uploadId: "Jji2XpCSvHT0jyyOHtLc" });
+//POST UPLOAD
+app.post("/api/uploads", async (req, res) => {
+  const { expectedFields } = req.body
+  const uploadID = await postUpload(expectedFields)
+  return res.send({ uploadID: uploadID });
 });
+
+//POST RUN
+app.post("/api/qa/runs", async (req, res) => {
+  const { accountId, cycleId, transactionId } = req.body;
+  const transactionContext = { accountId, cycleId, transactionId }
+  //Send expected fields to db
+  const runId = await postRun(transactionContext)
+  return res.send({ runId: runId});
+});
+
+//POST RESULTS
+app.post("/api/qa/runs/:id/results", async (req, res) => {
+  const runId  = req.params.id
+  const { resultData } = req.body
+  const resultId = await postResults(runId, resultData)
+  //Returns id of posted results
+  return res.send({resultId : resultId})
+})
 
 // Queue
 app.get("/api/qa/queue", (req, res) => {
@@ -163,7 +213,6 @@ app.get("/api/qa/queue", (req, res) => {
 
 app.post("/api/qa/runs/:id/queue", (req, res) => {
   const { id } = req.params;
-
   try {
     const q = getOrCreateQueue("runs");
 
