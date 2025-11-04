@@ -1,20 +1,23 @@
 export default class Queue {
-  constructor() {
+  constructor(name) {
+    this.name = name;
     this.items = [];
   }
 
   enqueue(item) {
     this.items.push(item);
+    return this.items.length;
   }
 
-  dequeue(item) {
-    return this.items.shift();
+  dequeue() {
+    return this.items.shift() ?? null;
   }
 
   cancel(item) {
-    if (this.items.includes(item)) {
-      return this.items.splice(this.items.indexOf(item), 1);
-    } else return "No Such Run Enqueued";
+    const i = this.items.indexOf(item);
+    if (i === -1) return false;
+    this.items.splice(i, 1);
+    return true;
   }
 
   peek() {
@@ -24,6 +27,10 @@ export default class Queue {
   }
 
   getSize() {
-    return this.items.length();
+    return this.items.length;
+  }
+
+  getQueue() {
+    return [...this.items].toReversed();
   }
 }
