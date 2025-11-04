@@ -14,21 +14,37 @@ xdescribe("queueing process", () => {
   });
 });
 
-describe("/api/qa/runs/:id/state", () => {
+xdescribe("GET STATE - /api/qa/runs/:id/state", () => {
   test("200 - Returns state of specified run", async () => {
     const response = await request.get("/api/qa/runs/sNwBWLZIaXGAwfHGn3NT/state")
     expect(response.body)
   });
 });
 
-
-describe("Run result", () => {
+xdescribe("Run result", () => {
   test("Getting result from runs with run ID", async () => {
     const res = await request.get("/api/qa/runs/:id/result");
-    console.log(res.body)
     expect(res.json);
   });
-}
+});
 
+xdescribe("POST RUN - /api/qa/runs", () => {
+  test("Creates a new run and returns id", async () => {
+    const transactionContext = {
+    accountId: "testing",
+    cycleId: "testing-c368-46cc-9fd2-4cba6184c90d",
+    transactionId: "testing-fa3e-4678-97dc-10811cfab126" 
+    }
+    const response = await request.post("/api/qa/runs").send(transactionContext)
+    expect(response.text)
+  });
+});
 
-);
+describe("POST UPLOAD - /api/uploads", () => {
+  test("Creates a new upload and returns id", async () => {
+    const body = {expectedFields: ["test", "2te2st", "test 3 tokyo drift"]}
+    const response = await request.post("/api/uploads").send(body)
+    console.log(response.text)
+    expect(response.text)
+  });
+});

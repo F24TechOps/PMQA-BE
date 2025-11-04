@@ -1,7 +1,9 @@
 import express, { json } from "express";
 import "dotenv/config";
 import Queue from "./queue/queue";
-import getRunState from "./firebase/runsState";
+import getRunState from "./firebase/getsRunState";
+import postRun from "./firebase/makeRun";
+import postUpload from "./firebase/makeUpload";
 
 const app = express();
 app.use(json());
@@ -31,7 +33,6 @@ app.get("/api/qa/runs", (req, res) => {
   //get's historic runs from db
   res.json({ data: [] });
 });
-
 
 app.get("/api/qa/runs/:id/result", (req, res) => {
   const { id } = req.params;
@@ -68,21 +69,27 @@ const results = {
 });
 
 
-// app.post("/api/upload", (req, res) => {
-//   res.json({ uploadId: "Jji2XpCSvHT0jyyOHtLc" });
-// });
+app.post("/api/uploads", async (req, res) => {
+  const { expectedFields } = req.body
+  const uploadID = await postUpload(expectedFields)
+  return res.send({ uploadID: uploadID });
+});
 
 
-app.post("/api/qa/runs", (req, res) => {
-  const { expectedFields, actualOutput, transactionContext } = req.body;
-  const { accountId, cycleId, transactionId } = transactionContext;
-
+app.post("/api/qa/runs", async (req, res) => {
+  const { accountId, cycleId, transactionId } = req.body;
+  const transactionContext = { accountId, cycleId, transactionId }
   //Send expected fields to db
+  const runID = await postRun(transactionContext)
+  return res.send({ runID: runID});
+});
 
-  //Send run record to db (just an id or similar)
+app.put("/api/qa/runs/:id", (req, res) => {
+  const { id } = req.params;
+  const { results } = req.body
 
-  //Put run into queue
-  res.send(`runID: ${runID}`);
+  
+  res.json({ data: [] });
 });
 
 const PORT = process.env.PORT || 3000;
