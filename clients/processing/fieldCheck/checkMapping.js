@@ -1,18 +1,30 @@
 //for the fields that were expected but not in json, check if they are mapped
 
-export default function mappingCheck(
-  actualFields,
-  comparisonResults
+import getMapping from "../../cyclr/mappings.js";
+
+export default async function mappingCheck(
+  comparisonResults,
+  transactionContext
 ) {
   const { resultsObj, furtherInvestigations } = comparisonResults;
-  const itemFields = actualFields.items[0]?.fields || {};
-  for (const field of furtherInvestigations.fields) {
-    if (!itemFields.hasOwnProperty(field)) {
-      resultsObj.fields[field] = { status: "Missing", reason: "Not mapped in Cyclr" };
-      resultsObj.summary.missing++
-    } else {
-      resultsObj.fields[field] = { status: "Missing", reason: "Null" };
+  const { accountId, cycleId } = transactionContext;
+
+  const mappingResultFromyclr = await getMapping(accountId, cycleId);
+
+  const mappedFields = mappingResultFromyclr[0]
+    .filter((item) => item.isMapped === true)
+    .map((field) => (field = field.id));
+
+  for (let i = 0; i < furtherInvestigations.fields.length; i++) {
+    if (!mappedFields.includes(furtherInvestigations.fields[i])) {
+      resultsObj.fields[furtherInvestigations.fields[i]] = {
+        status: "Missing",
+        reason: "Not Mapped In Cyclr",
+      };
+      resultsObj.summary.missing++;
+      furtherInvestigations.fields.splice(i, 1);
     }
   }
+
   return { resultsObj, furtherInvestigations };
 }
