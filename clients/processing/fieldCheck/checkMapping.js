@@ -9,22 +9,31 @@ export default async function mappingCheck(
   const { resultsObj, furtherInvestigations } = comparisonResults;
   const { accountId, cycleId } = transactionContext;
 
-  const mappingResultFromyclr = await getMapping(accountId, cycleId);
+  const mappingResultFromCyclr = await getMapping(accountId, cycleId);
 
-  const mappedFields = mappingResultFromyclr[0]
+  const mappingInformation = mappingResultFromCyclr[0].filter(
+    (item) => item.isMapped === true
+  );
+
+  const mappedFields = mappingResultFromCyclr[0]
     .filter((item) => item.isMapped === true)
     .map((field) => (field = field.id));
 
   for (let i = 0; i < furtherInvestigations.fields.length; i++) {
-    if (!mappedFields.includes(furtherInvestigations.fields[i])) {
-      resultsObj.fields[furtherInvestigations.fields[i]] = {
+    const fieldId = furtherInvestigations.fields[i];
+    const match = mappingInformation.find((f) => f.id === fieldId);
+
+    if (!mappedFields.includes(fieldId)) {
+      resultsObj.fields[fieldId] = {
         status: "Missing",
         reason: "Not Mapped In Cyclr",
       };
       resultsObj.summary.missing++;
       furtherInvestigations.fields.splice(i, 1);
+      i--;
+    } else {
+      furtherInvestigations.fields[i] = match;
     }
   }
-
   return { resultsObj, furtherInvestigations };
 }
