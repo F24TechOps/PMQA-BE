@@ -44,7 +44,7 @@ export default async function getMapping(accountId, workflowId) {
       }
 
       return {
-        id: field.Field.Id,
+        id: field.Field.Location.split('.').pop(),
         name: field.Field.Name,
         mappingType: field.MappingType,
         isMapped: field.MappingType !== "Ignore",
