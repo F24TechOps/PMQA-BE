@@ -24,7 +24,7 @@ export default async function runProcessor(
   //send result of this run to db run record
 
   //return results obj
-  console.log(`RESULTS: `, stepResults);
+ // console.log(`RESULTS: `, stepResults);
   return stepResults;
 }
 
