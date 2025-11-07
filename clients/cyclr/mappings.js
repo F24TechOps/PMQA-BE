@@ -1,9 +1,9 @@
 import axios from "axios";
 import { token, baseUrl } from "./config.js";
-import getSteps from "./steps.js";
+import { getCreateAndUpdateSteps } from "./steps.js";
 
 export default async function getMapping(accountId, workflowId) {
-  const stepIds = await getSteps(accountId, workflowId);
+  const stepIds = await getCreateAndUpdateSteps(accountId, workflowId);
   const output = [];
 
   for (const step of stepIds) {
@@ -44,7 +44,7 @@ export default async function getMapping(accountId, workflowId) {
       }
 
       return {
-        id: field.Field.Id,
+        id: field.Field.Location.split(".").pop(),
         name: field.Field.Name,
         mappingType: field.MappingType,
         isMapped: field.MappingType !== "Ignore",

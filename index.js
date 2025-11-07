@@ -13,6 +13,9 @@ import getRunState from "./firebase/runsState.js";
 import runProcessor from "./clients/processing/index.js"; 
 import getAccounts from "./clients/cyclr/accounts.js";
 import getWorkflows from "./clients/cyclr/workflows.js";
+import getTransactionByID from "./clients/cyclr/transactions.js";
+import getResultsById from "./firebase/getResultsById.js";
+
 const app = express();
 app.use(cors());
 app.use(json());
@@ -78,43 +81,16 @@ app.get("/api/qa/runs", async (req, res) => {
   return res.json({ data: data });
 });
 
-//TODO:
-app.get("/api/qa/runs/:id/result", (req, res) => {
-  const { id } = req.params;
+app.get("/api/qa/runs/:runId/result/:resultId", async (req, res) => {
+  const { runId, resultId } = req.params;
 
-  const results = {
-    fields: {
-      emailaddress: {
-        status: "Correct",
-        value: "glyn.hurll@thetrainingroom.com",
-      },
-      mobilephone: {
-        status: "Missing",
-        reason: "Not mapped in Cyclr",
-      },
-      birthdate: {
-        status: "Missing",
-        reason: "Not mapped in Cyclr",
-      },
-    },
-    summary: {
-      correct: 1,
-      null: 0,
-      missing: 2,
-      warning: 0,
-      extra: 0,
-    },
-    birthdate: {
-      status: "Missing",
-      reason: "Not mapped in Cyclr",
-    },
-  };
+  const results = await getResultsById(runId, resultId);
 
   if (!results) {
     return res.status(404).json({ error: "Run result not found" });
   }
 
-  res.json({ results });
+  res.json({ results: results });
 });
 
 //POST UPLOAD
@@ -129,19 +105,15 @@ app.post("/api/qa/runs", async (req, res) => {
   const { expectedFields, actualOutput, transactionContext } = req.body;
   const runId = await postRun(transactionContext);
 
-  //processing first
+  const resultData = runProcessor(
+    expectedFields,
+    actualOutput,
+    transactionContext
+  );
 
-  //then post result
-  return res.send({ runId: runId });
-});
-
-//POST RESULTS - TODO: To be merged with postrun
-app.post("/api/qa/runs/:id/results", async (req, res) => {
-  const runId = req.params.id;
-  const { resultData } = req.body;
   const resultId = await postResults(runId, resultData);
-  //Returns id of posted results
-  return res.send({ resultId: resultId });
+
+  return res.send({ runId: runId, resultId: resultId });
 });
 
 // Queue
