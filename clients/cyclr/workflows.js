@@ -8,7 +8,7 @@ async function getWorkflows(cyclrAccountId, page = 1) {
         const workflowToken = await token()
         const workflows = await axios.get(`${baseUrl}/v1.0/cycles`, {
             headers: {
-                Accept: "appplication/json",
+                Accept: "application/json",
                 Authorization: `Bearer ${workflowToken}`,
                 'X-Cyclr-Account': cyclrAccountId,
             },
@@ -18,11 +18,14 @@ async function getWorkflows(cyclrAccountId, page = 1) {
             }
         })
 
-        return workflows.data.map(item => item.Name)
-    }
-    catch (error) {
-        console.log(error, "Cyclr error")
-    }
+         return workflows.data.map(item => ({
+      Id: item.Id,
+      Name: item.Name,
+    }));
+  } catch (error) {
+    console.error("Error fetching workflows:", error.message);
+    throw error;
+  }
 }
 getWorkflows(testAccountId);
 

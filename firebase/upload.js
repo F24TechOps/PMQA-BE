@@ -12,4 +12,4 @@ async function addUpload(name) {
   }
 }
 
-addUpload("First Upload");
+//Not in use
