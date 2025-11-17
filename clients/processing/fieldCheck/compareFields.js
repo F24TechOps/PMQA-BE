@@ -10,7 +10,14 @@ export default function compareFields(expectedFields, actualFields) {
   const actualFieldsArr = [];
   const resultsObj = {
     fields: {},
-    summary: { correct: 0, null: 0, missing: 0, warning: 0, extra: 0 },
+    summary: {
+      correct: 0,
+      null: 0,
+      missing: 0,
+      warning: 0,
+      error: 0,
+      extra: 0,
+    },
   };
   const furtherInvestigations = { fields: [] };
 
@@ -21,31 +28,14 @@ export default function compareFields(expectedFields, actualFields) {
     if (actualFields.items[0].fields[item] !== null) {
       actualFieldsArr.push(item.toLowerCase());
     } else {
+      resultsObj.fields[item] = {
+        status: "Null",
+        value: null,
+      };
       furtherInvestigations.fields.push(item.toLowerCase());
       resultsObj.summary.null++;
     }
   }
-
-  //     for (const expectedField of expectedFields) {
-  //     const expectedLowerName = expectedField.toLowerCase();
-  //     const actualIndex = actualKeysLower.indexOf(expectedLowerName);
-
-  //     if (actualIndex !== -1) {
-  //       const value = actualData[actualKeys[actualIndex]];
-  //       if (value !== null && value !== undefined && value !== "") {
-  //         resultsObj.fields[expectedField] = { status: "Correct", value };
-  //         resultsObj.summary.correct++;
-  //       } else {
-  //         resultsObj.fields[expectedField] = { status: "Null", value: null };
-  //         resultsObj.summary.null++;
-  //         furtherInvestigations.fields.push(expectedField);
-  //       }
-  //     } else {
-  //       resultsObj.fields[expectedField] = { status: "Missing", value: null };
-  //       resultsObj.summary.missing++;
-  //       furtherInvestigations.fields.push(expectedField);
-  //     }
-  //   }
 
   for (let i = 0; i < expectedLower.length; i++) {
     if (actualFieldsArr.includes(expectedLower[i])) {
@@ -59,7 +49,7 @@ export default function compareFields(expectedFields, actualFields) {
     }
   }
 
-  // check for extras (fields present in actual but not expected)
+  // check for extras (fields present in actual response but not expected fields)
   for (const item of actualFieldsArr) {
     if (!expectedLower.includes(item)) {
       resultsObj.fields[item] = {
@@ -70,6 +60,5 @@ export default function compareFields(expectedFields, actualFields) {
     }
   }
 
-  console.log("RESULTS => ", resultsObj);
   return { resultsObj, furtherInvestigations };
 }

@@ -1,75 +1,80 @@
 //main page that organises and manages the processing
 
-import compareFields from "./fieldCheck/checkExpectedFields.js";
+import compareFields from "./fieldCheck/compareFields.js";
 import mappingCheck from "./fieldCheck/checkMapping.js";
 import stepCheck from "./fieldCheck/checkStepIncidents.js";
 
-export default function runProcessor(expectedFields, actualFields, transactionContext) {
-  //checkExpectedFields -> puts the fields that are exapcted & present in a results obj
+export default async function runProcessor(
+  expectedFields,
+  actualFields,
+  transactionContext
+) {
   const comparisonResults = compareFields(expectedFields, actualFields);
 
-  //checkMapping - puts fields that were not mapped in results obj
-  const mappingResults = mappingCheck(
-    actualFields,
-    comparisonResults
-  );
+  const mappingResults = await mappingCheck(comparisonResults, transactionContext);
 
   //checkIncidents - puts fields that were errored in results obj
-  const stepResults = stepCheck(expectedFields, actualFields, mappingResults);
+  const stepResults = stepCheck(
+    expectedFields,
+    actualFields,
+    mappingResults,
+    transactionContext
+  );
 
   //send result of this run to db run record
 
   //return results obj
-  console.log(`RESULTS: `, stepResults);
+ // console.log(`RESULTS: `, stepResults);
   return stepResults;
 }
 
 const exampleActualFields = {
   items: [
     {
-      emailAddress: "masir@test.com",
+      emailAddress: "wendyrhoades@veryrealemail.com",
       fields: {
-        firstname: "Masir",
-        lastname: "Test",
-        jobtitle: "New Lead",
-        address1line1: "14 Crown Point Road",
-        address1postcode: "LS10 1EL",
-        address1city: "Leeds",
-        address1county: "West Yorkshire",
-        address1country: "United Kingdom",
-        emailstatus: "active",
-        smsstatus: "unsubscribed",
-        companyname: "Masir Test-UK1765426-Household",
-        easfrd5mcg: "001TA00001GoUveYAF",
-        "3mfq4uy8se": true,
-        "98vzewsraf": "003TA00000zZUzNYAW",
-        fd3452x7ez: "2025-10-22T16:38:58+00:00",
-        emailAddress: "masir@test.com",
-        mobilephone: null
+        firstname: null,
+        lastname: "Rhoades",
+        jobtitle: "Credit Analyst",
+        mobilephone: "+44 732 431 414",
+        address1line1: "90 Crown St, Camberwell, London SE5, UK",
+        address1line2: "London SE5",
+        address1postcode: "SE5",
+        address1city: "Greater London",
+        address1county: "England",
+        address1country: "GB",
+        xsc9fqry4h: "Barclays Investment Bank",
+        emailAddress: "wendyrhoades@veryrealemail.com",
       },
     },
   ],
 };
 
 const exampleExpectedFields = [
-  "emailstatus",
-  "smsstatus",
   "firstname",
   "lastname",
-  "companyname",
-  "easfrd5mcg",
   "jobtitle",
-  "emailaddress",
   "mobilephone",
   "address1line1",
   "address1line2",
-  "address1line3",
+  "address1postcode",
   "address1city",
   "address1county",
   "address1country",
-  "address1postcode",
-  "637htqbcvp",
-  "3mfq4uy8se",
+  "xsc9fqry4h",
+  "companyname",
+  "emailAddress",
+  "uqjrgk2a6w",
 ];
 
-runProcessor(exampleExpectedFields, exampleActualFields);
+const exampleTransactionContext = {
+  accountId: "7fcb9aae-c368-46cc-9fd2-4cba6184c90d",
+  cycleId: "cb6ff75b-e87c-4602-b63e-d48b3f54ee5a",
+  transactionId: "2d3cd3b3-7957-490f-97ea-17b19f6b7bc3",
+};
+
+runProcessor(
+  exampleExpectedFields,
+  exampleActualFields,
+  exampleTransactionContext
+);

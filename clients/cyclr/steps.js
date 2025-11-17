@@ -1,7 +1,7 @@
 import axios from "axios";
 import { token, baseUrl } from "./config.js";
 
-export default async function getSteps(accountId, workflowId) {
+export async function getCreateAndUpdateSteps(accountId, workflowId) {
   const bearerToken = await token();
   const steps = await axios.get(`${baseUrl}/v1.0/cycles/${workflowId}/steps`, {
     headers: {
@@ -26,4 +26,17 @@ export default async function getSteps(accountId, workflowId) {
     )
     .map((step) => step.id);
   return stepInfo;
+}
+
+export async function getStepById(accountId, workflowId, stepId) {
+  const bearerToken = await token();
+  const steps = await axios.get(`${baseUrl}/v1.0/cycles/${workflowId}/steps/${stepId}`, {
+    headers: {
+      Accept: "application/json",
+      "X-Cyclr-Account": accountId,
+      Authorization: `Bearer ${bearerToken}`,
+    },
+  });
+
+  return steps.data;
 }
