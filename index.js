@@ -22,7 +22,7 @@ app.use(json());
 
 app.get("/", (req, res) => {
   res.json({ status: "ok", APIKey: process.env.CYCLR_API_KEY });
-});
+}); 
 
 //GET RUN BY ID
 app.get("/api/qa/runs/:id", async (req, res) => {
