@@ -119,61 +119,10 @@ app.get("/api/qa/runs/:id/state", async (req, res) => {
   return res.json(data);
 });
 
-app.post("/api/qa/run", (req, res) => {
-  const { expectedFields, actualOutput, transactionContext } = req.body;
-  const { accountId, cycleId, transactionId } = transactionContext;
-
-  //send expected fields to db
-
 //GET ALL RUNS
 app.get("/api/qa/runs", async (req, res) => {
   const data = await getRuns()
   return res.json({data: data});
-});
-
-app.get("/api/qa/runs/:id/result", (req, res) => {
-  const { id } = req.params;
-  // getRunResult is example function- function does not exist yet.
-  // const result = getRunResult(runId);
-  const results = {
-    fields: {
-      emailaddress: {
-        status: "Correct",
-        value: "glyn.hurll@thetrainingroom.com",
-      },
-      mobilephone: {
-        status: "Missing",
-        reason: "Not mapped in Cyclr",
-      },
-      birthdate: {
-        status: "Missing",
-        reason: "Not mapped in Cyclr",
-      },
-    },
-    summary: {
-      correct: 1,
-      null: 0,
-      missing: 2,
-      warning: 0,
-      extra: 0,
-    },
-    birthdate: {
-      status: "Missing",
-      reason: "Not mapped in Cyclr"
-    }
-  },
-  summary: {
-    correct: 1,
-    null: 0,
-    missing: 2,
-    warning: 0,
-    extra: 0
-  }
-}
-  if (!results) {
-    return res.status(404).json({ error: "Run result not found" });
-  }
-  res.json({ results });
 });
 
 //POST UPLOAD
