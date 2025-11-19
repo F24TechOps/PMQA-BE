@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "start": "node index.js",
-    "test": "set NODE_OPTIONS=--experimental-vm-modules && jest --detectOpenHandles"
+    "test": "set NODE_OPTIONS=--experimental-vm-modules && jest --detectOpenHandles",
+    "test2": "set NODE_OPTIONS=--experimental-vm-modules && jest --runTestsByPath __tests__/processing.test.js"
   },
   "dependencies": {
     "axios": "^1.12.2",

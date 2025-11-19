@@ -10,7 +10,6 @@ export default async function runProcessor(
   transactionContext
 ) {
   const comparisonResults = compareFields(expectedFields, actualFields);
-
   const mappingResults = await mappingCheck(comparisonResults, transactionContext);
 
   //checkIncidents - puts fields that were errored in results obj

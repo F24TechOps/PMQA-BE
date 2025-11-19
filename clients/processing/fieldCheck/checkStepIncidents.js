@@ -17,7 +17,7 @@ export default async function stepCheck(
     const stepResults = await getStepById(accountId, cycleId, stepId);
 
     //TODO: Not Finished!!!
-    console.log(stepResults.Method.ResponseFields.filter((item) => item.Id === fieldId));
+    //console.log(stepResults.Method.ResponseFields.filter((item) => item.Id === fieldId));
   }
 
   return { resultsObj, furtherInvestigations };
