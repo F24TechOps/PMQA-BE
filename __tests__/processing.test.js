@@ -4,7 +4,7 @@ import mappingCheck from "../clients/processing/fieldCheck/checkMapping.js"
 
 describe("Processing", () => {
     describe("Compare Fields", () => {
-        test("One expected field returns summary object with 'correct' value", () => {
+        test("One expected field", () => {
             const testActualFields = {
                     items: [
                         {
@@ -40,7 +40,7 @@ describe("Processing", () => {
             expect(testFunctionReturn.resultsObj.fields.firstname.value).toEqual(testActualFields.items[0].fields.firstname)
 
         })
-        test("One unexpected field returns summary object with 'extra' value and a populated further investigations object", () => {
+        test("One unexpected field", () => {
             const testActualFields = {
                     items: [
                         {
@@ -59,7 +59,7 @@ describe("Processing", () => {
             expect(testFunctionReturn.resultsObj.fields.firstname.status).toEqual("Extra")
             expect(testFunctionReturn.furtherInvestigations.fields).toContain("lastname")
         })
-        test("One null field returns summary object with 'null' value and a populated further investigations object", () => {
+        test("One null field", () => {
             const testActualFields = {
                     items: [
                         {
@@ -79,7 +79,7 @@ describe("Processing", () => {
             expect(testFunctionReturn.furtherInvestigations.fields).toContain("firstname")
 
         })
-        test("A combination of fields returns summary object with values and a populated further investigations object", () => {
+        test("A combination of fields", () => {
             const testActualFields = {
                     items: [
                         {
@@ -134,17 +134,78 @@ describe("Processing", () => {
         })      
     })
     describe("Check Mapping", () => {
-        test("", () => {
+        test("One mapped extra field", async () => {
+            const testActualFields = {
+                    items: [
+                        {
+                        emailAddress: "estherthetester@veryrealemail.com",
+                        fields: {
+                            firstname: "Esther",
+                        },
+                        },
+                    ],
+            };
+            const testExpectedFields = [
+                "lastname"
+            ]
+            const testComparisonResults = compareFields(testExpectedFields, testActualFields)
+            const testTransactionContext = {
+                accountId: "7fcb9aae-c368-46cc-9fd2-4cba6184c90d",
+                cycleId: "cb6ff75b-e87c-4602-b63e-d48b3f54ee5a"
+            }
+            const testCheckMappingOutput = await mappingCheck(testComparisonResults, testTransactionContext)
+            expect(testCheckMappingOutput.resultsObj.summary.extra).toEqual(1)
+            expect(testCheckMappingOutput.resultsObj.fields.firstname.status).toEqual("Extra")
+            expect(testCheckMappingOutput.furtherInvestigations.fields[0].isMapped).toEqual(true)
+
         })
-        test("", () => {  
-        })
-        test("", () => {  
-        })
-        test("", () => {  
-        })
-        test("", () => {  
-        })
-        test("", () => {  
+        test("One mapped null field", async () => { 
+            const testActualFields = {
+                    items: [
+                        {
+                        emailAddress: "estherthetester@veryrealemail.com",
+                        fields: {
+                            firstname: null,
+                        },
+                        },
+                    ],
+            };
+            const testExpectedFields = [
+                "firstname"
+            ]
+            const testComparisonResults = compareFields(testExpectedFields, testActualFields)
+            const testTransactionContext = {
+                accountId: "7fcb9aae-c368-46cc-9fd2-4cba6184c90d",
+                cycleId: "cb6ff75b-e87c-4602-b63e-d48b3f54ee5a"
+            }
+            const testCheckMappingOutput = await mappingCheck(testComparisonResults, testTransactionContext)
+            expect(testCheckMappingOutput.resultsObj.summary.null).toEqual(1)
+            expect(testCheckMappingOutput.resultsObj.fields.firstname.status).toEqual("Null")
+            expect(testCheckMappingOutput.furtherInvestigations.fields[0].isMapped).toEqual(true)
+        })  
+        test("One unmapped field", async () => {
+            const testActualFields = {
+                    items: [
+                        {
+                        emailAddress: "estherthetester@veryrealemail.com",
+                        fields: {
+                            firstname: "Esther",
+                        },
+                        },
+                    ],
+            };
+            const testExpectedFields = [
+                "firstname",
+                "unmapped_field"
+            ]
+            const testComparisonResults = compareFields(testExpectedFields, testActualFields)
+            const testTransactionContext = {
+                accountId: "7fcb9aae-c368-46cc-9fd2-4cba6184c90d",
+                cycleId: "cb6ff75b-e87c-4602-b63e-d48b3f54ee5a"
+            }
+            const testCheckMappingOutput = await mappingCheck(testComparisonResults, testTransactionContext)
+            expect(testCheckMappingOutput.resultsObj.summary.missing).toEqual(1)
+            expect(testCheckMappingOutput.resultsObj.fields.unmapped_field.status).toEqual("Missing")
         })
     })
 })
