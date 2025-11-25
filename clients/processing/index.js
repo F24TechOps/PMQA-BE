@@ -9,10 +9,16 @@ export default async function runProcessor(
   actualFields,
   transactionContext
 ) {
+  // Compares the expected fields to the actual fields.
   const comparisonResults = compareFields(expectedFields, actualFields);
-  const mappingResults = await mappingCheck(comparisonResults, transactionContext);
 
-  //checkIncidents - puts fields that were errored in results obj
+  // gets the create and update step (that actually makes the change in the platform and is usually the last step) and checks if the fields that need to be investigated have been mapped. If they have not been mapped then that ends the investigation for that field it gets put in the results. If the field is mapped and still has not come through, it stays in the furtherinvestigations array and is moved on to the next step.
+  const mappingResults = await mappingCheck(
+    comparisonResults,
+    transactionContext
+  );
+
+  // checkIncidents - puts fields that were errored in results obj
   const stepResults = stepCheck(
     expectedFields,
     actualFields,
@@ -23,8 +29,8 @@ export default async function runProcessor(
   //send result of this run to db run record
 
   //return results obj
- // console.log(`RESULTS: `, stepResults);
-  return stepResults;
+  // console.log(`RESULTS: `, stepResults);
+  return comparisonResults;
 }
 
 const exampleActualFields = {
@@ -69,7 +75,7 @@ const exampleExpectedFields = [
 const exampleTransactionContext = {
   accountId: "7fcb9aae-c368-46cc-9fd2-4cba6184c90d",
   cycleId: "cb6ff75b-e87c-4602-b63e-d48b3f54ee5a",
-  transactionId: "2d3cd3b3-7957-490f-97ea-17b19f6b7bc3",
+  transactionId: "3440d093-02e5-4a80-a369-aee8eb5b2409",
 };
 
 runProcessor(
