@@ -7,28 +7,29 @@ afterAll(async () => {
   await server.close();
 });
 
-xdescribe("queueing process", () => {
+describe("API Calls", () => {
+describe("queueing process", () => {
   test("adding a task to the queue", async () => {
     const res = await request.get("/api/qa/runs/abc/queue");
     expect(res.json);
   });
 });
 
-xdescribe("GET RUN - /api/qa/runs/:id", () => {
+describe("GET RUN - /api/qa/runs/:id", () => {
   test("200 - Returns data of specified run", async () => {
     const response = await request.get("/api/qa/runs/sNwBWLZIaXGAwfHGn3NT")
     expect(response.body)
   });
 });
 
-xdescribe("Run result", () => {
+describe("Run result", () => {
   test("Getting result from runs with run ID", async () => {
     const res = await request.get("/api/qa/runs/:id/result");
     expect(res.json);
   });
 });
 
-xdescribe("POST RUN - /api/qa/runs", () => {
+describe("POST RUN - /api/qa/runs", () => {
   test("Creates a new run and returns id", async () => {
     const transactionContext = {
     accountId: "testing",
@@ -44,7 +45,7 @@ describe("POST UPLOAD - /api/uploads", () => {
   test("Creates a new upload and returns id", async () => {
     const body = {expectedFields: ["test", "2te2st", "test 3 tokyo drift"]}
     const response = await request.post("/api/uploads").send(body)
-    console.log(response.text)
     expect(response.text)
   });
+});
 });

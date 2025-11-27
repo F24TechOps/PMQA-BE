@@ -40,3 +40,16 @@ export async function getStepById(accountId, workflowId, stepId) {
 
   return steps.data;
 }
+
+export async function getStepForMappingById(accountId, stepId) {
+  const bearerToken = await token();
+  const steps = await axios.get(`${baseUrl}/v1.0/steps/${stepId}/fieldsformapping`, {
+    headers: {
+      Accept: "application/json",
+      "X-Cyclr-Account": accountId,
+      Authorization: `Bearer ${bearerToken}`,
+    },
+  });
+  
+ return steps?.data[0]?.Step;
+}

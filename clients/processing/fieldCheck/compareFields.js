@@ -6,7 +6,6 @@ export default function compareFields(expectedFields, actualFields) {
     );
     return;
   }
-
   const actualFieldsArr = [];
   const resultsObj = {
     fields: {},
@@ -41,7 +40,7 @@ export default function compareFields(expectedFields, actualFields) {
     if (actualFieldsArr.includes(expectedLower[i])) {
       resultsObj.fields[expectedLower[i]] = {
         status: "Correct",
-        value: actualFields.items[0].fields[expectedLower[i]],
+        value: actualFields.items[0].fields[expectedFields[i]],
       };
       resultsObj.summary.correct++;
     } else if (!furtherInvestigations.fields.includes(expectedLower[i])) {
@@ -59,6 +58,6 @@ export default function compareFields(expectedFields, actualFields) {
       resultsObj.summary.extra++;
     }
   }
-
+  
   return { resultsObj, furtherInvestigations };
 }
