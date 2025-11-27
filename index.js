@@ -8,9 +8,7 @@ import getRuns from "./firebase/getRuns.js";
 import getUploadById from "./firebase/getUploadById.js";
 import postResults from "./firebase/postResults.js";
 import { getOrCreateQueue } from "./queue/queueRegister.js";
-import Queue from "./queue/queue.js";
-import getRunState from "./firebase/runsState.js";
-import runProcessor from "./clients/processing/index.js"; 
+import runProcessor from "./clients/processing/index.js";
 import getAccounts from "./clients/cyclr/accounts.js";
 import getWorkflows from "./clients/cyclr/workflows.js";
 import getTransactionByID from "./clients/cyclr/transactions.js";
@@ -22,7 +20,7 @@ app.use(json());
 
 app.get("/", (req, res) => {
   res.json({ status: "ok", APIKey: process.env.CYCLR_API_KEY });
-}); 
+});
 
 //GET RUN BY ID
 app.get("/api/qa/runs/:id", async (req, res) => {
@@ -81,6 +79,7 @@ app.get("/api/qa/runs", async (req, res) => {
   return res.json({ data: data });
 });
 
+//Get run result
 app.get("/api/qa/runs/:runId/result/:resultId", async (req, res) => {
   const { runId, resultId } = req.params;
 
@@ -94,16 +93,20 @@ app.get("/api/qa/runs/:runId/result/:resultId", async (req, res) => {
 });
 
 //POST UPLOAD
-app.post("/api/uploads", async (req, res) => {
-  const { expectedFields } = req.body;
+app.post("/api/qa/uploads", async (req, res) => {
+  const expectedFields = req.body;
+  console.log(expectedFields);
+
   const uploadID = await postUpload(expectedFields);
   return res.send({ uploadID: uploadID });
 });
 
 //POST RUN
 app.post("/api/qa/runs", async (req, res) => {
-  const { expectedFields, actualOutput, transactionContext } = req.body;
-  const runId = await postRun(transactionContext);
+  const { expectedFields, actualOutput, transactionContext, uploadId } =
+    req.body;
+
+  const runId = await postRun(transactionContext, uploadId);
 
   const resultData = runProcessor(
     expectedFields,

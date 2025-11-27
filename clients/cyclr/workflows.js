@@ -1,7 +1,7 @@
 //take aacounts/workflow/run from cyclr and link to steps etc.
 
 import axios from "axios";
-import { token, baseUrl, testAccountId } from "./config.js";
+import { token, baseUrl } from "./config.js";
 
 async function getWorkflows(cyclrAccountId, page = 1) {
     try {
@@ -13,7 +13,7 @@ async function getWorkflows(cyclrAccountId, page = 1) {
                 'X-Cyclr-Account': cyclrAccountId,
             },
             params: {
-                pageSize: 10,
+                pageSize: 100,
                 page: page
             }
         })
@@ -27,6 +27,5 @@ async function getWorkflows(cyclrAccountId, page = 1) {
     throw error;
   }
 }
-getWorkflows(testAccountId);
 
 export default getWorkflows
