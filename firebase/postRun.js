@@ -19,7 +19,7 @@ async function postRun(transactionContext, uploadId){
         return docSnapshot.id
     }
     catch (e){
-        console.error("this has errored " + e);
+        console.error("Could not post a run" + e);
  
     }
 }

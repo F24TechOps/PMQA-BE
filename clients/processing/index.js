@@ -19,12 +19,12 @@ export default async function runProcessor(
   );
 
   // checkIncidents - puts fields that were errored in results obj
-  const stepResults = stepCheck(
-    expectedFields,
-    actualFields,
-    mappingResults,
-    transactionContext
-  );
+  // const stepResults = stepCheck(
+  //   expectedFields,
+  //   actualFields,
+  //   mappingResults,
+  //   transactionContext
+  // );
 
   //send result of this run to db run record
 

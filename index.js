@@ -108,7 +108,7 @@ app.post("/api/qa/runs", async (req, res) => {
 
   const runId = await postRun(transactionContext, uploadId);
 
-  const resultData = runProcessor(
+  const resultData = await runProcessor(
     expectedFields,
     actualOutput,
     transactionContext
