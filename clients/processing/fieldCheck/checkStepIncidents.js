@@ -1,4 +1,4 @@
-import { getStepById, getStepForMappingById } from "../../cyclr/steps.js";
+import { getStepById } from "../../cyclr/steps.js";
 import getTransactionByID from "../../cyclr/transactions.js";
 
 //for the fields that were mapped, check the steps they were mapped in
@@ -29,73 +29,74 @@ export default async function stepCheck(
       .filter((transaction) => transaction.StepId === stepId)
       .at(-1).Response;
 
-    // if (!mappedStepResults) {
-    //   resultsObj.fields[fieldKey] = {
-    //     status: "Error",
-    //     reason: "No step response returned",
-    //   };
-    //   continue;
-    // }
+      
+    if (!mappedStepResults) {
+      resultsObj.fields[fieldKey] = {
+        status: "Error",
+        reason: "No step response returned",
+      };
+      continue;
+    }
 
-    // const responseFieldDef = stepResponseFields.find(
-    //   (field) => field.Id === fieldId
-    // );
+    const responseFieldDef = stepResponseFields.find(
+      (field) => field.Id === fieldId
+    );
 
-    // if (!responseFieldDef) {
-    //   resultsObj.fields[fieldKey] = {
-    //     status: "Error",
-    //     reason: "Field not in response schema for mapped step",
-    //   };
-    //   continue;
-    // }
+    if (!responseFieldDef) {
+      resultsObj.fields[fieldKey] = {
+        status: "Error",
+        reason: "Field not in response schema for mapped step",
+      };
+      continue;
+    }
 
-    // const location = responseFieldDef.Location;
-    // const finalKey = location.split(".").pop().replace("]", "");
+    const location = responseFieldDef.Location;
+    const finalKey = location.split(".").pop().replace("]", "");
 
-    // let valueFromStep;
+    let valueFromStep;
 
-    // if (mappedStepResults.items & Array.isArray(mappedStepResults.items)) {
-    //   valueFromStep = mappedStepResults.items[0]?.[finalKey];
-    // } else {
-    //   valueFromStep = mappedStepResults[finalKey];
-    // }
-
-    // if (valueFromStep === undefined || valueFromStep === null) {
-    //   resultsObj.fields[fieldKey] = {
-    //     status: "Error",
-    //     reason: `Field Missing in Mapped Step Response`,
-    //   };
-    // } else {
-    //   if (valueFromStep !== undefined && valueFromStep !== null) {
-    //     resultsObj.fields[fieldKey] = {
-    //       status: "Warning",
-    //       reason:
-    //         "Step returned a value but it was missing in the final record",
-    //       value: valueFromStep,
-    //     };
-    //     continue;
-    //   }
+    //Use responseFieldDef.Location for valueFromStep
     
-    //   const stepIncident = getStepIncident(accountId, cycleId, stepId);
+    if (mappedStepResults.items & Array.isArray(mappedStepResults.items)) {
+      valueFromStep = mappedStepResults.items[0]?.[finalKey];
+    } else {
+      valueFromStep = mappedStepResults[finalKey];
+    }
 
-    //   if (stepIncident) {
-    //     resultsObj.fields[fieldKey] = {
-    //       status: "Error",
-    //       reason: "Cyclr reported an incident on this step",
-    //     };
-    //     continue;
-    //   }
+    if (valueFromStep === undefined || valueFromStep === null) {
+      resultsObj.fields[fieldKey] = {
+        status: "Error",
+        reason: `Field Missing in Mapped Step Response`,
+      };
+    } else {
+      if (valueFromStep !== undefined && valueFromStep !== null) {
+        resultsObj.fields[fieldKey] = {
+          status: "Warning",
+          reason:
+            "Step returned a value but it was missing in the final record",
+          value: valueFromStep,
+        };
+        continue;
+      }
+    
+      const stepIncident = getStepIncident(accountId, cycleId, stepId);
 
-    //   resultsObj.fields[fieldKey] = {
-    //     status: "Warning",
-    //     reason: "Field missing in step response and no incident report"
-    //   }
+      if (stepIncident) {
+        resultsObj.fields[fieldKey] = {
+          status: "Error",
+          reason: "Cyclr reported an incident on this step",
+        };
+        continue;
+      }
 
-    // }
-    console.log(transactionData, stepRes);
+      resultsObj.fields[fieldKey] = {
+        status: "Warning",
+        reason: "Field missing in step response and no incident report"
+      }
+
+    }
   }
-
-  // return { resultsObj, furtherInvestigations };
+  return { resultsObj, furtherInvestigations };
 }
 
 /** InvestigationArray[i]
@@ -235,3 +236,37 @@ export default async function stepCheck(
  * {"current_employer":"Barclays Investment Bank","current_job_title":"Credit Analyst","mobile":"+44 732 431 414","current_location":{"country":"GB","location_name":"London SE5","address":"90 Crown St, Camberwell, London SE5, UK","city":"Greater London","latitude":51.4789361,"district":"","post_code":"SE5","state":"England","longitude":-0.0958107999999811,"nearest_train_station":""}}
  * depending on the step
  */
+
+let mappingResults = {
+      resultsObj: {
+      fields: { firstname: { status: 'Null', value: null } },
+      summary: { correct: 0, null: 1, missing: 0, warning: 0, error: 0, extra: 0 }
+    },
+      furtherInvestigations: {
+      fields: [
+         {
+          id: 'firstname',
+          name: 'First Name',
+          mappingType: 'PreviousStep',
+          isMapped: true,
+          linkedSteps: [
+            {
+              stepId: '08ddf5f3-47e9-4060-8d2d-6e30d13cb81f',
+              fieldId: 27718270
+            }
+          ]
+        }
+      ]
+    }
+}
+
+let transactionContext = {
+  accountId: "7fcb9aae-c368-46cc-9fd2-4cba6184c90d",
+  cycleId: "cb6ff75b-e87c-4602-b63e-d48b3f54ee5a",
+  transactionId: "3440d093-02e5-4a80-a369-aee8eb5b2409",
+}
+
+// stepCheck(
+//   mappingResults,
+//   transactionContext
+// )

@@ -1,5 +1,3 @@
-//main page that organises and manages the processing
-
 import compareFields from "./fieldCheck/compareFields.js";
 import mappingCheck from "./fieldCheck/checkMapping.js";
 import stepCheck from "./fieldCheck/checkStepIncidents.js";
@@ -9,28 +7,27 @@ export default async function runProcessor(
   actualFields,
   transactionContext
 ) {
-  // Compares the expected fields to the actual fields.
+  // Compares the expected fields to the actual fields
   const comparisonResults = compareFields(expectedFields, actualFields);
 
-  // gets the create and update step (that actually makes the change in the platform and is usually the last step) and checks if the fields that need to be investigated have been mapped. If they have not been mapped then that ends the investigation for that field it gets put in the results. If the field is mapped and still has not come through, it stays in the furtherinvestigations array and is moved on to the next step.
+  // Gets the C&U step (that makes the change in the platform and is usually the last step) and checks if the fields that need to be investigated further have been mapped. If not been mapped then that ends the investigation for that field it gets put in the results. If the field is mapped and still has not come through, it stays in the furtherInvestigations array
+
   const mappingResults = await mappingCheck(
     comparisonResults,
     transactionContext
   );
 
-  // checkIncidents - puts fields that were errored in results obj
-  const stepResults = stepCheck(
-    expectedFields,
-    actualFields,
+  // Checks individual steps and transactions as to why the furtherInvestigations fields have not returned correctly
+  const stepResults = await stepCheck(
     mappingResults,
     transactionContext
   );
 
-  //send result of this run to db run record
+  // Send result of this run to db run record
 
-  //return results obj
-  // console.log(`RESULTS: `, stepResults);
-  return comparisonResults;
+  //console.log(`RESULTS: `, stepResults.resultsObj, stepResults.furtherInvestigations);
+  
+  return stepResults;
 }
 
 const exampleActualFields = {
@@ -78,8 +75,4 @@ const exampleTransactionContext = {
   transactionId: "3440d093-02e5-4a80-a369-aee8eb5b2409",
 };
 
-runProcessor(
-  exampleExpectedFields,
-  exampleActualFields,
-  exampleTransactionContext
-);
+

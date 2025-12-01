@@ -16,8 +16,5 @@ export default async function getTransactionByID(accountID, cycleId, id) {
     },
   });
   
-  
   return transaction.data;
 }
-
-getTransactionByID(testAccountId, testCycleId, testTransactionID);

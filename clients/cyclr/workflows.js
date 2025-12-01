@@ -27,6 +27,5 @@ async function getWorkflows(cyclrAccountId, page = 1) {
     throw error;
   }
 }
-getWorkflows(testAccountId);
 
 export default getWorkflows

@@ -16,4 +16,3 @@ export default async function getIncidents(id, level, accountId) {
   return incidents.data;
 }
 
-getIncidents();
