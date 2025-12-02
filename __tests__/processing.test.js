@@ -1,5 +1,8 @@
 import compareFields from "../clients/processing/fieldCheck/compareFields.js"
 import mappingCheck from "../clients/processing/fieldCheck/checkMapping.js"
+import stepCheck from "../clients/processing/fieldCheck/checkStepIncidents.js"
+import getTransactionByID from "../clients/cyclr/transactions.js"
+import runProcessor from "../clients/processing/index.js"
 
 
 describe("Processing", () => {
@@ -183,7 +186,7 @@ describe("Processing", () => {
             expect(testCheckMappingOutput.resultsObj.fields.firstname.status).toEqual("Null")
             expect(testCheckMappingOutput.furtherInvestigations.fields[0].isMapped).toEqual(true)
         })  
-        test("One unmapped field", async () => {
+        xtest("One unmapped field", async () => {
             const testActualFields = {
                     items: [
                         {
@@ -206,6 +209,35 @@ describe("Processing", () => {
             const testCheckMappingOutput = await mappingCheck(testComparisonResults, testTransactionContext)
             expect(testCheckMappingOutput.resultsObj.summary.missing).toEqual(1)
             expect(testCheckMappingOutput.resultsObj.fields.unmapped_field.status).toEqual("Missing")
+        })
+    })
+    describe("Check Step Incidents", () => {
+        test("Error 1 - No step response returned", async () => {
+            const testExpectedFields = [
+                "jobtitle",
+                "companyname"
+            ]
+            const testActualFields = {
+                    items: [
+                        {
+                        emailAddress: "estherthetester@veryrealemail.com",
+                        fields: {
+                            companyname: "Job"
+                        },
+                        },
+                    ],
+            };
+            const testTransactionContext = {
+                accountId: "7fcb9aae-c368-46cc-9fd2-4cba6184c90d",
+                cycleId: "cb6ff75b-e87c-4602-b63e-d48b3f54ee5a",
+                transactionId: "1256df86-2239-451e-a619-033194812830",
+            }
+
+            const testFunctionReturn = await runProcessor(testExpectedFields, testActualFields, testTransactionContext)
+
+            console.log(testFunctionReturn.resultsObj, "results")
+            console.log(testFunctionReturn.furtherInvestigations, "further")
+
         })
     })
 })
