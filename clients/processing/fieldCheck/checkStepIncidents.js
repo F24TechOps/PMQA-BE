@@ -16,20 +16,23 @@ export default async function stepCheck(
     const fieldId = linked.fieldId;
     const fieldKey = investigationArray[i].id;
 
+    // Step data from linked step
     const stepRes = await getStepById(accountId, cycleId, stepId);
     const stepResponseFields = stepRes.Method.ResponseFields;
 
+    // All transaction data
     const transactionData = await getTransactionByID(
       accountId,
       cycleId,
       transactionId
     );
 
+    // Filters for linked step 
     const mappedStepResults = transactionData
       .filter((transaction) => transaction.StepId === stepId)
       .at(-1).Response;
 
-      
+    // If no linked step
     if (!mappedStepResults) {
       resultsObj.fields[fieldKey] = {
         status: "Error",
@@ -42,6 +45,7 @@ export default async function stepCheck(
       (field) => field.Id === fieldId
     );
 
+    // If field is not in output
     if (!responseFieldDef) {
       resultsObj.fields[fieldKey] = {
         status: "Error",
@@ -50,13 +54,14 @@ export default async function stepCheck(
       continue;
     }
 
+    // Find field location
     const location = responseFieldDef.Location;
     const finalKey = location.split(".").pop().replace("]", "");
 
     let valueFromStep;
 
     //Use responseFieldDef.Location for valueFromStep
-    
+
     if (mappedStepResults.items & Array.isArray(mappedStepResults.items)) {
       valueFromStep = mappedStepResults.items[0]?.[finalKey];
     } else {
@@ -80,7 +85,7 @@ export default async function stepCheck(
       }
     
       const stepIncident = getStepIncident(accountId, cycleId, stepId);
-
+      // Check if step had incident/error 
       if (stepIncident) {
         resultsObj.fields[fieldKey] = {
           status: "Error",
@@ -88,7 +93,6 @@ export default async function stepCheck(
         };
         continue;
       }
-
       resultsObj.fields[fieldKey] = {
         status: "Warning",
         reason: "Field missing in step response and no incident report"
