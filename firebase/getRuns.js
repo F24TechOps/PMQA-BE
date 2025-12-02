@@ -6,8 +6,12 @@ async function getRuns() {
     try{
         const querySnapshot = await getDocs(collection(db, 'runs'))
         querySnapshot.forEach((doc) => {
-            allDocArray.push(doc.data())
-        })
+            allDocArray.push({
+                runId: doc.id,
+                ...doc.data()
+            });
+        });
+
         return allDocArray
     }
     catch (e) {
