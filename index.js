@@ -13,6 +13,7 @@ import getAccounts from "./clients/cyclr/accounts.js";
 import getWorkflows from "./clients/cyclr/workflows.js";
 import getTransactionByID from "./clients/cyclr/transactions.js";
 import getResultsById from "./firebase/getResultsById.js";
+import deleteRun from "./firebase/deleteRun.js";
 
 const app = express();
 app.use(cors());
@@ -117,6 +118,15 @@ app.post("/api/qa/runs", async (req, res) => {
   const resultId = await postResults(runId, resultData);
 
   return res.send({ runId: runId, resultId: resultId });
+});
+
+app.delete("/api/qa/run/:runId", async (req, res) => {
+  const { runId } = req.params;
+  try {
+    await deleteRun(runId);
+  } catch (err) {
+    console.error("The run was unable to be deleted: ", err);
+  }
 });
 
 // Queue
