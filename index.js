@@ -1,18 +1,19 @@
 import express, { json } from "express";
 import cors from "cors";
 import "dotenv/config";
-import getRunById from "./firebase/getRunById";
-import postRun from "./firebase/postRun";
-import postUpload from "./firebase/postUpload";
-import getRuns from "./firebase/getRuns";
-import getUploadById from "./firebase/getUploadById";
-import postResults from "./firebase/postResults";
+import getRunById from "./firebase/getRunById.js";
+import postRun from "./firebase/postRun.js";
+import postUpload from "./firebase/postUpload.js";
+import getRuns from "./firebase/getRuns.js";
+import getUploadById from "./firebase/getUploadById.js";
+import postResults from "./firebase/postResults.js";
 import { getOrCreateQueue } from "./queue/queueRegister.js";
 import runProcessor from "./clients/processing/index.js";
 import getAccounts from "./clients/cyclr/accounts.js";
 import getWorkflows from "./clients/cyclr/workflows.js";
 import getTransactionByID from "./clients/cyclr/transactions.js";
 import getResultsById from "./firebase/getResultsById.js";
+import deleteRun from "./firebase/deleteRun.js";
 
 const app = express();
 app.use(cors());
@@ -79,6 +80,7 @@ app.get("/api/qa/runs", async (req, res) => {
   return res.json({ data: data });
 });
 
+//Get run result
 app.get("/api/qa/runs/:runId/result/:resultId", async (req, res) => {
   const { runId, resultId } = req.params;
 
@@ -92,18 +94,22 @@ app.get("/api/qa/runs/:runId/result/:resultId", async (req, res) => {
 });
 
 //POST UPLOAD
-app.post("/api/uploads", async (req, res) => {
-  const { expectedFields } = req.body;
+app.post("/api/qa/uploads", async (req, res) => {
+  const expectedFields = req.body;
+  console.log(expectedFields);
+
   const uploadID = await postUpload(expectedFields);
   return res.send({ uploadID: uploadID });
 });
 
 //POST RUN
 app.post("/api/qa/runs", async (req, res) => {
-  const { expectedFields, actualOutput, transactionContext } = req.body;
-  const runId = await postRun(transactionContext);
+  const { expectedFields, actualOutput, transactionContext, uploadId } =
+    req.body;
 
-  const resultData = runProcessor(
+  const runId = await postRun(transactionContext, uploadId);
+
+  const resultData = await runProcessor(
     expectedFields,
     actualOutput,
     transactionContext
@@ -112,6 +118,15 @@ app.post("/api/qa/runs", async (req, res) => {
   const resultId = await postResults(runId, resultData);
 
   return res.send({ runId: runId, resultId: resultId });
+});
+
+app.delete("/api/qa/run/:runId", async (req, res) => {
+  const { runId } = req.params;
+  try {
+    await deleteRun(runId);
+  } catch (err) {
+    console.error("The run was unable to be deleted: ", err);
+  }
 });
 
 // Queue

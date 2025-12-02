@@ -9,7 +9,7 @@ export default async function getAccounts() {
       Authorization: `Bearer ${bearerToken}`,
     },
     params: {
-      pageSize: 10,
+      pageSize: 5000
     },
   });
   const accountInfo = accounts.data.map((item) => {

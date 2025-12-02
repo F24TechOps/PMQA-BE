@@ -74,5 +74,3 @@ const exampleTransactionContext = {
   cycleId: "cb6ff75b-e87c-4602-b63e-d48b3f54ee5a",
   transactionId: "3440d093-02e5-4a80-a369-aee8eb5b2409",
 };
-
-

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { token, baseUrl, testAccountId, testCycleId, testTransactionID } from "./config.js";
+import { token, baseUrl } from "./config.js";
 
 export default async function getTransactionByID(accountID, cycleId, id) {
   const bearerToken = await token();

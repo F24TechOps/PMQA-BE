@@ -10,8 +10,7 @@ async function postUpload(expectedFields){
         return docSnapshot.id
     }
     catch (e){
-        console.error("this has errored " + e);
- 
+        console.error("Could not upload expected fields " + e);
     }
 }
 
