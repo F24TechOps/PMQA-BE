@@ -14,13 +14,20 @@ import getWorkflows from "./clients/cyclr/workflows.js";
 import getTransactionByID from "./clients/cyclr/transactions.js";
 import getResultsById from "./firebase/getResultsById.js";
 import deleteRun from "./firebase/deleteRun.js";
+import fs from "fs";
 
 const app = express();
 app.use(cors());
 app.use(json());
 
+let api;
+
+fs.readFile("./apiSpec.json", (err, data) => {
+  api = JSON.parse(data);
+});
+
 app.get("/", (req, res) => {
-  res.json({ status: "ok", APIKey: process.env.CYCLR_API_KEY });
+  res.json({ api });
 });
 
 //GET RUN BY ID
@@ -96,8 +103,6 @@ app.get("/api/qa/runs/:runId/result/:resultId", async (req, res) => {
 //POST UPLOAD
 app.post("/api/qa/uploads", async (req, res) => {
   const expectedFields = req.body;
-  console.log(expectedFields);
-
   const uploadID = await postUpload(expectedFields);
   return res.send({ uploadID: uploadID });
 });

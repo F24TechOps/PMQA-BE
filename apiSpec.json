@@ -1,0 +1,83 @@
+{
+
+  "getRunById": {
+    "method": "GET",
+    "path": "/api/qa/runs/:id",
+    "params": { "id": "string" },
+    "returns": { "runData": "object" }
+  },
+
+  "getUploadById": {
+    "method": "GET",
+    "path": "/api/qa/upload/:id",
+    "params": { "id": "string" },
+    "returns": { "uploadData": "object" }
+  },
+
+  "getAccounts": {
+    "method": "GET",
+    "path": "/api/qa/accounts",
+    "returns": { "accounts": ["object"] },
+    "errors": { "500": "Failed to fetch accounts" }
+  },
+
+  "getWorkflows": {
+    "method": "GET",
+    "path": "/api/qa/:accountId/cycles",
+    "params": { "accountId": "string" },
+    "returns": { "workflows": ["object"] },
+    "errors": { "500": "Failed to fetch cycles" }
+  },
+
+  "getTransactionById": {
+    "method": "GET",
+    "path": "/api/qa/transactions/:accountId/:cycleId/:transactionId",
+    "params": {
+      "accountId": "string",
+      "cycleId": "string",
+      "transactionId": "string"
+    },
+    "returns": { "transaction": "object" },
+    "errors": { "500": "Failed to fetch transaction" }
+  },
+
+  "getAllRuns": {
+    "method": "GET",
+    "path": "/api/qa/runs",
+    "returns": { "data": ["object"] }
+  },
+
+  "getRunResult": {
+    "method": "GET",
+    "path": "/api/qa/runs/:runId/result/:resultId",
+    "params": { "runId": "string", "resultId": "string" },
+    "returns": { "results": "object" },
+    "errors": { "404": "Run result not found" }
+  },
+
+  "postUpload": {
+    "method": "POST",
+    "path": "/api/qa/uploads",
+    "body": { "expectedFields": "object" },
+    "returns": { "uploadID": "string" }
+  },
+
+  "postRun": {
+    "method": "POST",
+    "path": "/api/qa/runs",
+    "body": {
+      "expectedFields": "object",
+      "actualOutput": "object",
+      "transactionContext": "object",
+      "uploadId": "string"
+    },
+    "returns": { "runId": "string", "resultId": "string" }
+  },
+
+  "deleteRun": {
+    "method": "DELETE",
+    "path": "/api/qa/run/:runId",
+    "params": { "runId": "string" },
+    "returns": { "deleted": true }
+  }
+}

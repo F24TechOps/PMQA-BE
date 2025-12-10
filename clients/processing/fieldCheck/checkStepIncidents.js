@@ -24,6 +24,7 @@ export default async function stepCheck(mappingResults, transactionContext) {
     // Step data from linked step
     const stepRes = await getStepById(accountId, cycleId, stepId);
     const stepResponseFields = stepRes.Method.ResponseFields;
+    const stepName = stepRes.Name
 
     // Filters for linked step
     const mappedStepResults = transactionData
@@ -85,7 +86,7 @@ export default async function stepCheck(mappingResults, transactionContext) {
       } else {
         resultsObj.fields[fieldKey] = {
           status: "Warning",
-          reason: `Field Missing in Mapped Step Response and there was no incident report`,
+          reason: `Missing field in ${stepName} with no incident`,
         };
       }
 
